@@ -37,7 +37,7 @@ module.exports = function(options) {
         .then(function(result) {
           vinyl.contents = new Buffer(result.css);
 
-          cmd.defaults.plugins.css.parse(vinyl, options, function(vinyl) {
+          cmd.defaults.plugins.css.process(vinyl, options, function(vinyl) {
             try {
               var result = uglify.minify(vinyl.contents.toString(), options.uglify);
 
@@ -57,7 +57,7 @@ module.exports = function(options) {
         var context = this;
 
         // transform
-        cmd.defaults.plugins[name].parse(vinyl, options, function(vinyl) {
+        cmd.defaults.plugins[name].process(vinyl, options, function(vinyl) {
           try {
             var result = uglify.minify(vinyl.contents.toString(), options.uglify);
 
@@ -80,7 +80,7 @@ module.exports = function(options) {
         .then(function(result) {
           vinyl.contents = new Buffer(result.css);
 
-          cmd.defaults.plugins.css.parse(vinyl, options, function(vinyl) {
+          cmd.defaults.plugins.css.process(vinyl, options, function(vinyl) {
             try {
               var result = uglify.minify(vinyl.contents.toString(), options.uglify);
 

@@ -6,6 +6,8 @@ var uglify = require('uglify-es');
 var cmd = require('@nuintun/gulp-cmd');
 var autoprefixer = require('autoprefixer');
 
+var defAddons = cmd.defaults.plugins;
+
 module.exports = function(options) {
   options = options || {};
   options.cssnano = options.cssnano || {};
@@ -29,7 +31,7 @@ module.exports = function(options) {
   var addons = {};
 
   if (options.minify) {
-    addons.css = function(vinyl, options, next) {
+    addons.css = function(vinyl, opts, next) {
       var context = this;
 
       cssnano
@@ -37,10 +39,9 @@ module.exports = function(options) {
         .then(function(result) {
           vinyl.contents = new Buffer(result.css);
 
-          cmd.defaults.plugins.css.process(vinyl, options, function(vinyl) {
+          defAddons.css.process(vinyl, opts, function(vinyl) {
             try {
-              var result = uglify.minify(vinyl.contents.toString(), options.uglify);
-
+              result = uglify.minify(vinyl.contents.toString(), options.uglify);
               vinyl.contents = new Buffer(result.code);
             } catch (error) {
               // no nothing
@@ -53,11 +54,11 @@ module.exports = function(options) {
     };
 
     ['js', 'json', 'tpl', 'html'].forEach(function(name) {
-      addons[name] = function(vinyl, options, next) {
+      addons[name] = function(vinyl, opts, next) {
         var context = this;
 
         // transform
-        cmd.defaults.plugins[name].process(vinyl, options, function(vinyl) {
+        defAddons[name].process(vinyl, opts, function(vinyl) {
           try {
             var result = uglify.minify(vinyl.contents.toString(), options.uglify);
 
@@ -72,7 +73,7 @@ module.exports = function(options) {
       }
     });
   } else {
-    addons.css = function(vinyl, options, next) {
+    addons.css = function(vinyl, opts, next) {
       var context = this;
 
       postcss(autoprefixer(options.autoprefixer))
@@ -80,10 +81,9 @@ module.exports = function(options) {
         .then(function(result) {
           vinyl.contents = new Buffer(result.css);
 
-          cmd.defaults.plugins.css.process(vinyl, options, function(vinyl) {
+          defAddons.css.process(vinyl, opts, function(vinyl) {
             try {
-              var result = uglify.minify(vinyl.contents.toString(), options.uglify);
-
+              result = uglify.minify(vinyl.contents.toString(), options.uglify);
               vinyl.contents = new Buffer(result.code);
             } catch (error) {
               // no nothing

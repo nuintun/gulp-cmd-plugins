@@ -1,5 +1,5 @@
 {
-  "name": "gulp-cmd-plugins",
+  "name": "@nuintun/gulp-cmd-plugins",
   "version": "1.0.0",
   "description": "The gulp-cmd enhance plugins.",
   "main": "index.js",

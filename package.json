@@ -20,7 +20,7 @@
   "dependencies": {
     "postcss": "^6.0.6",
     "cssnano": "^3.10.0",
-    "uglify-es": "^3.0.23",
+    "uglify-es": "^3.0.24",
     "autoprefixer": "^7.1.2",
     "@nuintun/gulp-cmd": "https://github.com/nuintun/gulp-cmd/archive/master.tar.gz"
   }

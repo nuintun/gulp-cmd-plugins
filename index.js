@@ -28,72 +28,57 @@ module.exports = function(options) {
   options.cssnano.safe = true;
   options.cssnano.autoprefixer = options.autoprefixer;
 
+  function minify(vinyl) {
+    return new Promise(function(resolve) {
+      try {
+        result = uglify.minify(vinyl.contents.toString(), options.uglify);
+        vinyl.contents = new Buffer(result.code);
+      } catch (error) {
+        // no nothing
+      }
+
+      resolve(vinyl);
+    });
+  }
+
   var addons = {};
 
   if (options.minify) {
-    addons.css = function(vinyl, opts, next) {
-      var context = this;
+    addons.css = [
+      function(vinyl) {
+        return new Promise(function(resolve) {
+          cssnano
+            .process(vinyl.contents.toString(), options.cssnano)
+            .then(function(result) {
+              vinyl.contents = new Buffer(result.css);
 
-      cssnano
-        .process(vinyl.contents.toString(), options.cssnano)
-        .then(function(result) {
-          vinyl.contents = new Buffer(result.css);
-
-          defAddons.css.process(vinyl, opts, function(vinyl) {
-            try {
-              result = uglify.minify(vinyl.contents.toString(), options.uglify);
-              vinyl.contents = new Buffer(result.code);
-            } catch (error) {
-              // no nothing
-            }
-
-            context.push(vinyl);
-            next();
-          });
+              resolve(vinyl);
+            });
         });
-    };
+      },
+      defAddons.css,
+      minify
+    ];
 
     ['js', 'json', 'tpl', 'html'].forEach(function(name) {
-      addons[name] = function(vinyl, opts, next) {
-        var context = this;
-
-        // transform
-        defAddons[name].process(vinyl, opts, function(vinyl) {
-          try {
-            var result = uglify.minify(vinyl.contents.toString(), options.uglify);
-
-            vinyl.contents = new Buffer(result.code);
-          } catch (error) {
-            // no nothing
-          }
-
-          context.push(vinyl);
-          next();
-        });
-      }
+      addons[name] = [defAddons[name], minify];
     });
   } else {
-    addons.css = function(vinyl, opts, next) {
-      var context = this;
+    addons.css = [
+      function(vinyl) {
+        return new Promise(function(resolve) {
+          postcss(autoprefixer(options.autoprefixer))
+            .process(vinyl.contents.toString())
+            .then(function(result) {
+              vinyl.contents = new Buffer(result.css);
 
-      postcss(autoprefixer(options.autoprefixer))
-        .process(vinyl.contents.toString())
-        .then(function(result) {
-          vinyl.contents = new Buffer(result.css);
-
-          defAddons.css.process(vinyl, opts, function(vinyl) {
-            try {
-              result = uglify.minify(vinyl.contents.toString(), options.uglify);
-              vinyl.contents = new Buffer(result.code);
-            } catch (error) {
-              // no nothing
-            }
-
-            context.push(vinyl);
-            next();
-          });
+              resolve(vinyl);
+            });
         });
-    };
+      },
+      defAddons.css,
+      minify
+    ]
   }
 
   return addons;

@@ -29,12 +29,13 @@ module.exports = function(options) {
   options.cssnano.autoprefixer = options.autoprefixer;
 
   function minify(vinyl) {
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
       try {
-        result = uglify.minify(vinyl.contents.toString(), options.uglify);
+        var result = uglify.minify(vinyl.contents.toString(), options.uglify);
+
         vinyl.contents = new Buffer(result.code);
       } catch (error) {
-        // no nothing
+        reject(error);
       }
 
       resolve(vinyl);
@@ -46,13 +47,16 @@ module.exports = function(options) {
   if (options.minify) {
     addons.css = [
       function(vinyl) {
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
           cssnano
             .process(vinyl.contents.toString(), options.cssnano)
             .then(function(result) {
               vinyl.contents = new Buffer(result.css);
 
               resolve(vinyl);
+            })
+            .catch(function(error) {
+              reject(error);
             });
         });
       },
@@ -66,13 +70,16 @@ module.exports = function(options) {
   } else {
     addons.css = [
       function(vinyl) {
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
           postcss(autoprefixer(options.autoprefixer))
             .process(vinyl.contents.toString())
             .then(function(result) {
               vinyl.contents = new Buffer(result.css);
 
               resolve(vinyl);
+            })
+            .catch(function(error) {
+              reject(error);
             });
         });
       },

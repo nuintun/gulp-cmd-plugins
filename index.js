@@ -3,10 +3,7 @@
 var postcss = require('postcss');
 var cssnano = require('cssnano');
 var uglify = require('uglify-es');
-var cmd = require('@nuintun/gulp-cmd');
 var autoprefixer = require('autoprefixer');
-
-var defAddons = cmd.defaults.plugins;
 
 module.exports = function(options) {
   options = options || {};
@@ -29,17 +26,15 @@ module.exports = function(options) {
   options.cssnano.autoprefixer = options.autoprefixer;
 
   function minify(vinyl) {
-    return new Promise(function(resolve, reject) {
-      try {
-        var result = uglify.minify(vinyl.contents.toString(), options.uglify);
+    try {
+      var result = uglify.minify(vinyl.contents.toString(), options.uglify);
 
-        vinyl.contents = new Buffer(result.code);
-      } catch (error) {
-        reject(error);
-      }
+      vinyl.contents = new Buffer(result.code);
+    } catch (error) {
+      throw error;
+    }
 
-      resolve(vinyl);
-    });
+    return vinyl;
   }
 
   var addons = {};
@@ -60,12 +55,12 @@ module.exports = function(options) {
             });
         });
       },
-      defAddons.css,
+      'inline-loader',
       minify
     ];
 
     ['js', 'json', 'tpl', 'html'].forEach(function(name) {
-      addons[name] = [defAddons[name], minify];
+      addons[name] = ['inline-loader', minify];
     });
   } else {
     addons.css = [
@@ -83,7 +78,7 @@ module.exports = function(options) {
             });
         });
       },
-      defAddons.css,
+      'inline-loader',
       minify
     ]
   }

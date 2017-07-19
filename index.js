@@ -26,7 +26,11 @@ module.exports = function(options) {
   options.cssnano.autoprefixer = options.autoprefixer;
 
   function minify(vinyl) {
-    var result = uglify.minify(vinyl.contents.toString(), options.uglify);
+    var file = {};
+
+    file[vinyl.path] = vinyl.contents.toString();
+
+    var result = uglify.minify(file, options.uglify);
 
     if (result.error) {
       throw result.error;

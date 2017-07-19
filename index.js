@@ -28,8 +28,8 @@ module.exports = function(options) {
   function minify(vinyl) {
     var result = uglify.minify(vinyl.contents.toString(), options.uglify);
 
-    if (!result.error) {
-      throw error;
+    if (result.error) {
+      throw result.error;
     }
 
     vinyl.contents = new Buffer(result.code);

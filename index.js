@@ -26,13 +26,13 @@ module.exports = function(options) {
   options.cssnano.autoprefixer = options.autoprefixer;
 
   function minify(vinyl) {
-    try {
-      var result = uglify.minify(vinyl.contents.toString(), options.uglify);
+    var result = uglify.minify(vinyl.contents.toString(), options.uglify);
 
-      vinyl.contents = new Buffer(result.code);
-    } catch (error) {
+    if (!result.error) {
       throw error;
     }
+
+    vinyl.contents = new Buffer(result.code);
 
     return vinyl;
   }

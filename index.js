@@ -3,7 +3,6 @@
 var postcss = require('postcss');
 var cssnano = require('cssnano');
 var uglify = require('uglify-es');
-var through = require('@nuintun/through');
 var autoprefixer = require('autoprefixer');
 
 module.exports = function(options) {
@@ -26,7 +25,7 @@ module.exports = function(options) {
   options.cssnano.safe = true;
   options.cssnano.autoprefixer = options.autoprefixer;
 
-  var minify = through(function(vinyl, encoding, next) {
+  function minify(vinyl) {
     var file = {};
 
     file[vinyl.path] = vinyl.contents.toString();
@@ -34,30 +33,32 @@ module.exports = function(options) {
     var result = uglify.minify(file, options.uglify);
 
     if (result.error) {
-      return next(result.error);
+      throw result.error;
+    } else {
+      vinyl.contents = new Buffer(result.code);
     }
 
-    vinyl.contents = new Buffer(result.code);
-
-    next(null, vinyl);
-  });
+    return vinyl;
+  }
 
   var addons = {};
 
   if (options.minify) {
     addons.css = [
-      through(function(vinyl, encoding, next) {
-        cssnano
-          .process(vinyl.contents.toString(), options.cssnano)
-          .then(function(result) {
-            vinyl.contents = new Buffer(result.css);
+      function(vinyl) {
+        return new Promise(function(resolve, reject) {
+          cssnano
+            .process(vinyl.contents.toString(), options.cssnano)
+            .then(function(result) {
+              vinyl.contents = new Buffer(result.css);
 
-            next(null, vinyl);
-          })
-          .catch(function(error) {
-            next(error);
-          });
-      }),
+              resolve(vinyl);
+            })
+            .catch(function(error) {
+              reject(error);
+            });
+        });
+      },
       'inline-loader',
       minify
     ];
@@ -67,18 +68,20 @@ module.exports = function(options) {
     });
   } else {
     addons.css = [
-      through(function(vinyl, encoding, next) {
-        postcss(autoprefixer(options.autoprefixer))
-          .process(vinyl.contents.toString())
-          .then(function(result) {
-            vinyl.contents = new Buffer(result.css);
+      function(vinyl) {
+        return new Promise(function(resolve, reject) {
+          postcss(autoprefixer(options.autoprefixer))
+            .process(vinyl.contents.toString())
+            .then(function(result) {
+              vinyl.contents = new Buffer(result.css);
 
-            next(null, vinyl);
-          })
-          .catch(function(error) {
-            next(error);
-          });
-      }),
+              resolve(vinyl);
+            })
+            .catch(function(error) {
+              reject(error);
+            });
+        });
+      },
       'inline-loader',
       minify
     ]

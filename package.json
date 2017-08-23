@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/nuintun/gulp-cmd-plugins",
   "dependencies": {
-    "postcss": "^6.0.8",
+    "postcss": "^6.0.9",
     "cssnano": "^3.10.0",
-    "uglify-es": "^3.0.27",
+    "uglify-es": "^3.0.28",
     "autoprefixer": "^7.1.2"
   }
 }

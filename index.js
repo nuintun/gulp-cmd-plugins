@@ -1,3 +1,11 @@
+/*!
+ * index
+ *
+ * Date: 2017/10/20
+ *
+ * This is licensed under the MIT License (MIT).
+ */
+
 'use strict';
 
 var postcss = require('postcss');

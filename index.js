@@ -1,18 +1,20 @@
-/*!
- * index
- *
- * Date: 2017/10/20
- *
- * This is licensed under the MIT License (MIT).
+/**
+ * @module index
+ * @license MIT
+ * @version 2017/11/13
  */
 
 'use strict';
 
-var postcss = require('postcss');
-var cssnano = require('cssnano');
-var uglify = require('uglify-es');
-var autoprefixer = require('autoprefixer');
+const postcss = require('postcss');
+const cssnano = require('cssnano');
+const uglify = require('uglify-es');
+const autoprefixer = require('autoprefixer');
 
+/**
+ * @function js
+ * @param {Object} options
+ */
 module.exports = function(options) {
   options = options || {};
   options.cssnano = options.cssnano || {};
@@ -29,16 +31,16 @@ module.exports = function(options) {
     browsers: ['> 1% in CN', '> 5%', 'ie >= 8']
   }, options.autoprefixer);
 
-  // cssnano use safe mode
+  // Open cssnano use safe mode
   options.cssnano.safe = true;
   options.cssnano.autoprefixer = options.autoprefixer;
 
-  function minify(vinyl) {
-    var file = {};
+  const minify = (vinyl) => {
+    const file = {};
 
     file[vinyl.path] = vinyl.contents.toString();
 
-    var result = uglify.minify(file, options.uglify);
+    const result = uglify.minify(file, options.uglify);
 
     if (result.error) {
       throw result.error;
@@ -49,20 +51,20 @@ module.exports = function(options) {
     return vinyl;
   }
 
-  var addons = {};
+  const addons = {};
 
   if (options.minify) {
     addons.css = [
       function(vinyl) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
           cssnano
             .process(vinyl.contents.toString(), options.cssnano)
-            .then(function(result) {
+            .then((result) => {
               vinyl.contents = new Buffer(result.css);
 
               resolve(vinyl);
             })
-            .catch(function(error) {
+            .catch((error) => {
               reject(error);
             });
         });
@@ -71,21 +73,21 @@ module.exports = function(options) {
       minify
     ];
 
-    ['js', 'json', 'tpl', 'html'].forEach(function(name) {
+    ['js', 'json', 'tpl', 'html'].forEach((name) => {
       addons[name] = ['inline-loader', minify];
     });
   } else {
     addons.css = [
       function(vinyl) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
           postcss(autoprefixer(options.autoprefixer))
             .process(vinyl.contents.toString())
-            .then(function(result) {
+            .then((result) => {
               vinyl.contents = new Buffer(result.css);
 
               resolve(vinyl);
             })
-            .catch(function(error) {
+            .catch((error) => {
               reject(error);
             });
         });

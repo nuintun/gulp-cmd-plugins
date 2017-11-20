@@ -19,23 +19,29 @@ module.exports = function(options) {
   options = options || {};
   options.cssnano = options.cssnano || {};
 
-  options.uglify = Object.assign({
-    ecma: 5,
-    ie8: true,
-    mangle: { eval: true }
-  }, options.uglify);
+  options.uglify = Object.assign(
+    {
+      ecma: 5,
+      ie8: true,
+      mangle: { eval: true }
+    },
+    options.uglify
+  );
 
-  options.autoprefixer = Object.assign({
-    add: true,
-    remove: true,
-    browsers: ['> 1% in CN', '> 5%', 'ie >= 8']
-  }, options.autoprefixer);
+  options.autoprefixer = Object.assign(
+    {
+      add: true,
+      remove: true,
+      browsers: ['> 1% in CN', '> 5%', 'ie >= 8']
+    },
+    options.autoprefixer
+  );
 
   // Open cssnano use safe mode
   options.cssnano.safe = true;
   options.cssnano.autoprefixer = options.autoprefixer;
 
-  const minify = (vinyl) => {
+  const minify = vinyl => {
     const file = {};
 
     file[vinyl.path] = vinyl.contents.toString();
@@ -49,7 +55,7 @@ module.exports = function(options) {
     }
 
     return vinyl;
-  }
+  };
 
   const addons = {};
 
@@ -59,12 +65,12 @@ module.exports = function(options) {
         return new Promise((resolve, reject) => {
           cssnano
             .process(vinyl.contents.toString(), options.cssnano)
-            .then((result) => {
+            .then(result => {
               vinyl.contents = new Buffer(result.css);
 
               resolve(vinyl);
             })
-            .catch((error) => {
+            .catch(error => {
               reject(error);
             });
         });
@@ -73,7 +79,7 @@ module.exports = function(options) {
       minify
     ];
 
-    ['js', 'json', 'tpl', 'html'].forEach((name) => {
+    ['js', 'json', 'tpl', 'html'].forEach(name => {
       addons[name] = ['inline-loader', minify];
     });
   } else {
@@ -82,19 +88,19 @@ module.exports = function(options) {
         return new Promise((resolve, reject) => {
           postcss(autoprefixer(options.autoprefixer))
             .process(vinyl.contents.toString())
-            .then((result) => {
+            .then(result => {
               vinyl.contents = new Buffer(result.css);
 
               resolve(vinyl);
             })
-            .catch((error) => {
+            .catch(error => {
               reject(error);
             });
         });
       },
       'inline-loader',
       minify
-    ]
+    ];
   }
 
   return addons;

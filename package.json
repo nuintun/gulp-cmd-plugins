@@ -7,10 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/nuintun/gulp-cmd-plugins.git"
   },
-  "keywords": [
-    "gulp",
-    "cmd"
-  ],
+  "keywords": ["gulp", "cmd"],
   "author": "nuintun",
   "license": "MIT",
   "bugs": {
@@ -23,7 +20,7 @@
   "dependencies": {
     "postcss": "^6.0.14",
     "cssnano": "^3.10.0",
-    "uglify-es": "^3.1.9",
+    "uglify-es": "^3.1.10",
     "autoprefixer": "^7.1.6"
   }
 }

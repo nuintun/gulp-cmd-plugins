@@ -32,7 +32,7 @@ module.exports = function(options) {
     {
       add: true,
       remove: true,
-      browsers: ['>= 0.5% in CN', '>= 1%', 'ie >= 8']
+      browsers: ['> 0.5% in CN', '> 1%', 'ie >= 8']
     },
     options.autoprefixer
   );

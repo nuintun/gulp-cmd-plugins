@@ -87,7 +87,7 @@ module.exports = function(options) {
       function(vinyl) {
         return new Promise((resolve, reject) => {
           postcss(autoprefixer(options.autoprefixer))
-            .process(vinyl.contents.toString())
+            .process(vinyl.contents.toString(), { from: vinyl.path })
             .then(result => {
               vinyl.contents = new Buffer(result.css);
 

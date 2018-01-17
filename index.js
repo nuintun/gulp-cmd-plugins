@@ -75,12 +75,12 @@ module.exports = function(options) {
             });
         });
       },
-      'inline-loader',
+      'default',
       minify
     ];
 
     ['js', 'json', 'tpl', 'html'].forEach(name => {
-      addons[name] = ['inline-loader', minify];
+      addons[name] = ['default', minify];
     });
   } else {
     addons.css = [
@@ -98,8 +98,7 @@ module.exports = function(options) {
             });
         });
       },
-      'inline-loader',
-      minify
+      'default'
     ];
   }
 

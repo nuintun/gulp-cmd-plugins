@@ -1,6 +1,6 @@
 {
   "name": "@nuintun/gulp-cmd-plugins",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "The gulp-cmd enhance plugins.",
   "main": "index.js",
   "repository": {
@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/nuintun/gulp-cmd-plugins",
   "dependencies": {
-    "postcss": "^6.0.16",
+    "postcss": "^6.0.19",
     "cssnano": "^3.10.0",
     "uglify-es": "^3.3.9",
-    "autoprefixer": "^7.2.5"
+    "autoprefixer": "^8.0.0"
   }
 }

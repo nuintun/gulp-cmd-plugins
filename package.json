@@ -1,8 +1,8 @@
 {
   "name": "@nuintun/gulp-cmd-plugins",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The gulp-cmd enhance plugins.",
-  "main": "index.js",
+  "main": "index",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nuintun/gulp-cmd-plugins.git"

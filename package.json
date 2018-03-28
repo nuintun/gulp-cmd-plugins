@@ -1,6 +1,6 @@
 {
   "name": "@nuintun/gulp-cmd-plugins",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The gulp-cmd enhance plugins.",
   "main": "index",
   "repository": {

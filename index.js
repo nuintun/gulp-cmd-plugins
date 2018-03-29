@@ -32,10 +32,8 @@ const isFileType = (path, type) => extname(path).toLowerCase() === `.${type}`;
  * @function js
  * @param {Object} options
  */
-module.exports = function(options) {
-  options = options || {};
+module.exports = function(options = {}) {
   options.cssnano = options.cssnano || {};
-
   options.uglify = Object.assign(
     {
       ecma: 5,
@@ -44,7 +42,6 @@ module.exports = function(options) {
     },
     options.uglify
   );
-
   options.autoprefixer = Object.assign(
     {
       add: true,
@@ -53,7 +50,6 @@ module.exports = function(options) {
     },
     options.autoprefixer
   );
-
   // Open cssnano use safe mode
   options.cssnano.safe = true;
   options.cssnano.autoprefixer = options.autoprefixer;

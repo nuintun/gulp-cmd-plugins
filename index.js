@@ -9,7 +9,7 @@
 const postcss = require('postcss');
 const cssnano = require('cssnano');
 const uglify = require('uglify-es');
-const babel = require('@babel/core');
+const babel = require('babel-core');
 const autoprefixer = require('autoprefixer');
 const { extname, relative } = require('path');
 

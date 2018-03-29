@@ -82,9 +82,11 @@ module.exports = function(options = {}) {
       const rpath = relative(base, path);
       const config = Object.assign({}, options.babel, {
         filename: path,
-        sourceMaps: 'inline',
         filenameRelative: rpath
       });
+
+      // Format source maps
+      config.sourceMaps = config.sourceMaps === false ? false : 'inline';
 
       // Babel transform
       try {

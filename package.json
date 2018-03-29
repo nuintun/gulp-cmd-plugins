@@ -1,6 +1,6 @@
 {
   "name": "@nuintun/gulp-cmd-plugins",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "description": "The gulp-cmd enhance plugins.",
   "main": "index.js",
   "repository": {
@@ -8,7 +8,10 @@
     "url": "git+https://github.com/nuintun/gulp-cmd-plugins.git"
   },
   "keywords": ["gulp", "cmd"],
-  "author": "nuintun",
+  "author": {
+    "name": "nuintun",
+    "email": "nuintun@qq.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/nuintun/gulp-cmd-plugins/issues"
@@ -16,11 +19,11 @@
   "engines": {
     "node": ">=4.0.0"
   },
-  "homepage": "https://github.com/nuintun/gulp-cmd-plugins",
   "dependencies": {
     "postcss": "^6.0.21",
     "cssnano": "^3.10.0",
     "uglify-es": "^3.3.9",
     "autoprefixer": "^8.2.0"
-  }
+  },
+  "homepage": "https://github.com/nuintun/gulp-cmd-plugins#readme"
 }

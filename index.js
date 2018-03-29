@@ -72,7 +72,7 @@ module.exports = function(options = {}) {
 
       return contents;
     },
-    async bundle(path, contents, { base }) {
+    bundle(path, contents, { base }) {
       if (!isFileType(path, 'js')) return contents;
 
       // Get contents string

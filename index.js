@@ -96,6 +96,7 @@ module.exports = function(options = {}) {
         if (result) contents = result.ignored ? contents : result.code;
       } catch (error) {
         // Babel syntax error
+        throw error;
       }
 
       // Uglify minify

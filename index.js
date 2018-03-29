@@ -91,7 +91,7 @@ module.exports = function(options = {}) {
         const result = babel.transform(contents, config);
 
         // Get transformed code
-        contents = result.ignored ? contents : result.code;
+        if (result) contents = result.ignored ? contents : result.code;
       } catch (error) {
         // Babel syntax error
       }
@@ -105,7 +105,7 @@ module.exports = function(options = {}) {
       }
 
       // To buffer
-      contents = toBuffer(result.css);
+      contents = toBuffer(contents);
 
       return contents;
     }

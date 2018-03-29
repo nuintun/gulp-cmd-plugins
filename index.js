@@ -64,8 +64,8 @@ module.exports = function(options = {}) {
 
       // Process css file
       const result = options.minify
-        ? cssnano.process(contents, options.cssnano)
-        : postcss(autoprefixer(options.autoprefixer)).process(contents, { from: path });
+        ? await cssnano.process(contents, options.cssnano)
+        : await postcss(autoprefixer(options.autoprefixer)).process(contents, { from: path });
 
       // To buffer
       contents = toBuffer(result.css);

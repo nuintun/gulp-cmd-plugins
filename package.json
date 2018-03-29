@@ -1,6 +1,6 @@
 {
   "name": "@nuintun/gulp-cmd-plugins",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "The gulp-cmd enhance plugins.",
   "main": "index.js",
   "repository": {
@@ -17,13 +17,14 @@
     "url": "https://github.com/nuintun/gulp-cmd-plugins/issues"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=7.6.0"
   },
   "dependencies": {
     "postcss": "^6.0.21",
     "cssnano": "^3.10.0",
     "uglify-es": "^3.3.9",
-    "autoprefixer": "^8.2.0"
+    "autoprefixer": "^8.2.0",
+    "@babel/core": "7.0.0-beta.42"
   },
   "homepage": "https://github.com/nuintun/gulp-cmd-plugins#readme"
 }

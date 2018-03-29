@@ -1,7 +1,7 @@
 /**
  * @module index
  * @license MIT
- * @version 2017/11/13
+ * @version 2018/03/29
  */
 
 'use strict';
@@ -9,7 +9,24 @@
 const postcss = require('postcss');
 const cssnano = require('cssnano');
 const uglify = require('uglify-es');
+const babel = require('@babel/core');
 const autoprefixer = require('autoprefixer');
+const { extname, relative } = require('path');
+
+/**
+ * @function toBuffer
+ * @param {string} string
+ * @returns {Buffer}
+ */
+const toBuffer = Buffer.from ? Buffer.from : string => new Buffer(string);
+
+/**
+ * @function isFileType
+ * @param {string} path
+ * @param {string} type
+ * @returns {boolean}
+ */
+const isFileType = (path, type) => extname(path).toLowerCase() === `.${type}`;
 
 /**
  * @function js
@@ -41,66 +58,60 @@ module.exports = function(options) {
   options.cssnano.safe = true;
   options.cssnano.autoprefixer = options.autoprefixer;
 
-  const minify = vinyl => {
-    const file = {};
+  return {
+    name: 'gulp-cmd-plugins',
+    async transform(path, contents) {
+      if (!isFileType(path, 'css')) return contents;
 
-    file[vinyl.path] = vinyl.contents.toString();
+      // Get contents string
+      contents = contents.toString();
 
-    const result = uglify.minify(file, options.uglify);
+      // Process css file
+      const result = options.minify
+        ? cssnano.process(contents, options.cssnano)
+        : postcss(autoprefixer(options.autoprefixer)).process(contents, { from: path });
 
-    if (result.error) {
-      throw result.error;
-    } else {
-      vinyl.contents = new Buffer(result.code);
+      // To buffer
+      contents = toBuffer(result.css);
+
+      return contents;
+    },
+    async bundle(path, contents, { base }) {
+      if (!isFileType(path, 'js')) return contents;
+
+      // Get contents string
+      contents = contents.toString();
+
+      // Babel config
+      const rpath = relative(base, path);
+      const config = Object.assign({}, options.babel, {
+        filename: path,
+        sourceMaps: 'inline',
+        filenameRelative: rpath
+      });
+
+      // Babel transform
+      try {
+        const result = babel.transform(contents, config);
+
+        // Get transformed code
+        contents = result.ignored ? contents : result.code;
+      } catch (error) {
+        // Babel syntax error
+      }
+
+      // Uglify minify
+      if (options.minify) {
+        const result = uglify.minify({ [path]: contents }, options.uglify);
+
+        // Get minify code
+        contents = result.error ? contents : result.code;
+      }
+
+      // To buffer
+      contents = toBuffer(result.css);
+
+      return contents;
     }
-
-    return vinyl;
   };
-
-  const addons = {};
-
-  if (options.minify) {
-    addons.css = [
-      function(vinyl) {
-        return new Promise((resolve, reject) => {
-          cssnano
-            .process(vinyl.contents.toString(), options.cssnano)
-            .then(result => {
-              vinyl.contents = new Buffer(result.css);
-
-              resolve(vinyl);
-            })
-            .catch(error => {
-              reject(error);
-            });
-        });
-      },
-      'default',
-      minify
-    ];
-
-    ['js', 'json', 'tpl', 'html'].forEach(name => {
-      addons[name] = ['default', minify];
-    });
-  } else {
-    addons.css = [
-      function(vinyl) {
-        return new Promise((resolve, reject) => {
-          postcss(autoprefixer(options.autoprefixer))
-            .process(vinyl.contents.toString(), { from: vinyl.path })
-            .then(result => {
-              vinyl.contents = new Buffer(result.css);
-
-              resolve(vinyl);
-            })
-            .catch(error => {
-              reject(error);
-            });
-        });
-      },
-      'default'
-    ];
-  }
-
-  return addons;
 };

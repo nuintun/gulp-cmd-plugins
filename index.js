@@ -22,13 +22,6 @@ const { extname, relative } = require('path');
 const unixify = path => path.replace(/\\/g, '/');
 
 /**
- * @function toBuffer
- * @param {string} string
- * @returns {Buffer}
- */
-const toBuffer = Buffer.from ? Buffer.from : string => new Buffer(string);
-
-/**
  * @function isFileType
  * @param {string} path
  * @param {string} type
@@ -81,9 +74,6 @@ module.exports = function(options = {}) {
             map: sourceMaps ? { inline: sourceMaps, from: `/${unixify(relative(root, path))}` } : null
           });
 
-      // To buffer
-      contents = toBuffer(result.css);
-
       return contents;
     },
     transformed(path, contents, { root }) {
@@ -117,9 +107,6 @@ module.exports = function(options = {}) {
         // Get minify code
         contents = result.error ? contents : result.code;
       }
-
-      // To buffer
-      contents = toBuffer(contents);
 
       return contents;
     }

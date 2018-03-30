@@ -87,7 +87,9 @@ module.exports = function(options = {}) {
       // Babel config
       const config = Object.assign({}, options.babel, {
         sourceMaps,
+        ast: false,
         filename: path,
+        highlightCode: true,
         sourceFileName: sourceMaps ? `/${unixify(relative(root, path))}` : path
       });
 

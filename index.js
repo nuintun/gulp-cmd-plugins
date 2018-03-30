@@ -14,6 +14,14 @@ const autoprefixer = require('autoprefixer');
 const { extname, relative } = require('path');
 
 /**
+ * @function unixify
+ * @description Convert path separators to posix/unix-style forward slashes.
+ * @param {string} path
+ * @returns {string}
+ */
+const unixify = path => path.replace(/\\/g, '/');
+
+/**
  * @function toBuffer
  * @param {string} string
  * @returns {Buffer}
@@ -54,9 +62,12 @@ module.exports = function(options = {}) {
   options.cssnano.safe = true;
   options.cssnano.autoprefixer = options.autoprefixer;
 
+  // Out source maps
+  const sourceMaps = options.sourceMaps === false ? false : 'inline';
+
   return {
     name: 'gulp-cmd-plugins',
-    async transform(path, contents) {
+    async transform(path, contents, { root }) {
       if (!isFileType(path, 'css')) return contents;
 
       // Get contents string
@@ -65,28 +76,28 @@ module.exports = function(options = {}) {
       // Process css file
       const result = options.minify
         ? await cssnano.process(contents, options.cssnano)
-        : await postcss(autoprefixer(options.autoprefixer)).process(contents, { from: path });
+        : await postcss(autoprefixer(options.autoprefixer)).process(contents, {
+            from: path,
+            map: sourceMaps ? { inline: sourceMaps, from: `/${unixify(relative(root, path))}` } : null
+          });
 
       // To buffer
       contents = toBuffer(result.css);
 
       return contents;
     },
-    bundle(path, contents, { base }) {
+    bundle(path, contents, { root }) {
       if (!isFileType(path, 'js')) return contents;
 
       // Get contents string
       contents = contents.toString();
 
       // Babel config
-      const rpath = relative(base, path);
       const config = Object.assign({}, options.babel, {
+        sourceMaps,
         filename: path,
-        filenameRelative: rpath
+        sourceFileName: sourceMaps ? `/${unixify(relative(root, path))}` : path
       });
-
-      // Format source maps
-      config.sourceMaps = config.sourceMaps === false ? false : 'inline';
 
       // Babel transform
       try {

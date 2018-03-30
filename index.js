@@ -74,6 +74,8 @@ module.exports = function(options = {}) {
             map: sourceMaps ? { inline: sourceMaps, from: `/${unixify(relative(root, path))}` } : null
           });
 
+      contents = result.css;
+
       return contents;
     },
     transformed(path, contents, { root }) {

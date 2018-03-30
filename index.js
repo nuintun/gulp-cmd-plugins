@@ -67,7 +67,7 @@ module.exports = function(options = {}) {
 
   return {
     name: 'gulp-cmd-plugins',
-    async transform(path, contents, { root }) {
+    async parsed(path, contents, { root }) {
       if (!isFileType(path, 'css')) return contents;
 
       // Get contents string
@@ -86,7 +86,7 @@ module.exports = function(options = {}) {
 
       return contents;
     },
-    bundle(path, contents, { root }) {
+    transformed(path, contents, { root }) {
       if (!isFileType(path, 'js')) return contents;
 
       // Get contents string

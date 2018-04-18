@@ -24,7 +24,7 @@
     "cssnano": "^3.10.0",
     "uglify-es": "^3.3.9",
     "babel-core": "^6.26.0",
-    "autoprefixer": "^8.2.0"
+    "autoprefixer": "^8.3.0"
   },
   "homepage": "https://github.com/nuintun/gulp-cmd-plugins#readme"
 }

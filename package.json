@@ -7,7 +7,10 @@
     "type": "git",
     "url": "git+https://github.com/nuintun/gulp-cmd-plugins.git"
   },
-  "keywords": ["gulp", "cmd"],
+  "keywords": [
+    "gulp",
+    "cmd"
+  ],
   "author": {
     "name": "nuintun",
     "email": "nuintun@qq.com"
@@ -20,11 +23,11 @@
     "node": ">=7.6.0"
   },
   "dependencies": {
-    "postcss": "^6.0.22",
-    "cssnano": "^3.10.0",
+    "postcss": "^6.0.23",
+    "cssnano": "^4.0.0",
     "uglify-es": "^3.3.9",
     "babel-core": "^6.26.3",
-    "autoprefixer": "^8.5.2"
+    "autoprefixer": "^8.6.5"
   },
   "homepage": "https://github.com/nuintun/gulp-cmd-plugins#readme"
 }

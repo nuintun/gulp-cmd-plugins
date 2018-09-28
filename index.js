@@ -8,8 +8,8 @@
 
 const postcss = require('postcss');
 const cssnano = require('cssnano');
-const uglify = require('uglify-es');
-const babel = require('babel-core');
+const uglify = require('uglify-js');
+const babel = require('@babel/core');
 const autoprefixer = require('autoprefixer');
 const { extname, relative } = require('path');
 
@@ -37,7 +37,6 @@ module.exports = function(options = {}) {
   options.cssnano = options.cssnano || {};
   options.uglify = Object.assign(
     {
-      ecma: 5,
       ie8: true,
       mangle: { eval: true }
     },

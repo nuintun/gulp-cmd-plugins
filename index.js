@@ -53,30 +53,14 @@ module.exports = function(options = {}) {
   options.cssnano.from = undefined;
   options.cssnano.autoprefixer = options.autoprefixer;
 
+  // Bable parsed file
+  const babelParsed = new Set();
   // Out source maps
   const sourceMaps = options.sourceMaps === false ? false : 'inline';
 
   return {
     name: 'gulp-cmd-plugins',
-    async transform(path, contents, { root }) {
-      if (!isFileType(path, 'css')) return contents;
-
-      // Get contents string
-      contents = contents.toString();
-
-      // Process css file
-      const result = options.minify
-        ? await cssnano.process(contents, options.cssnano)
-        : await postcss(autoprefixer(options.autoprefixer)).process(contents, {
-            from: path,
-            map: sourceMaps ? { inline: sourceMaps, from: `/${unixify(relative(root, path))}` } : null
-          });
-
-      contents = result.css;
-
-      return contents;
-    },
-    bundle(path, contents, { root }) {
+    async moduleDidLoad(path, contents, { root }) {
       if (!isFileType(path, 'js')) return contents;
 
       // Get contents string
@@ -101,6 +85,62 @@ module.exports = function(options = {}) {
         // Babel syntax error
         throw error;
       }
+
+      babelParsed.add(path);
+
+      return contents;
+    },
+    async moduleDidParse(path, contents, { root }) {
+      if (!isFileType(path, 'css')) return contents;
+
+      // Get contents string
+      contents = contents.toString();
+
+      // Process css file
+      const result = options.minify
+        ? await cssnano.process(contents, options.cssnano)
+        : await postcss(autoprefixer(options.autoprefixer)).process(contents, {
+            from: path,
+            map: sourceMaps ? { inline: sourceMaps, from: `/${unixify(relative(root, path))}` } : null
+          });
+
+      contents = result.css;
+
+      return contents;
+    },
+    async moduleDidTransform(path, contents, { root }) {
+      if (babelParsed.has(path) || !isFileType(path, 'js')) return contents;
+
+      // Get contents string
+      contents = contents.toString();
+
+      // Babel config
+      const config = Object.assign({}, options.babel, {
+        sourceMaps,
+        ast: false,
+        filename: path,
+        highlightCode: true,
+        sourceFileName: sourceMaps ? `/${unixify(relative(root, path))}` : path
+      });
+
+      // Babel transform
+      try {
+        const result = babel.transform(contents, config);
+
+        // Get transformed code
+        if (result) contents = result.ignored ? contents : result.code;
+      } catch (error) {
+        // Babel syntax error
+        throw error;
+      }
+
+      return contents;
+    },
+    moduleWillBundle(path, contents, { root }) {
+      if (!isFileType(path, 'js')) return contents;
+
+      // Get contents string
+      contents = contents.toString();
 
       // Uglify minify
       if (options.minify) {

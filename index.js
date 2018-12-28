@@ -97,7 +97,7 @@ module.exports = function(options = {}) {
       contents = contents.toString();
 
       // Babel trnasform
-      babelTransform(path, contents, { root, sourceMaps, babel: options.babel });
+      contents = babelTransform(path, contents, { root, sourceMaps, babel: options.babel });
 
       // Set babel trnasform cache
       babelParsed.add(path);
@@ -129,7 +129,7 @@ module.exports = function(options = {}) {
       contents = contents.toString();
 
       // Babel trnasform
-      babelTransform(path, contents, { root, sourceMaps, babel: options.babel });
+      contents = babelTransform(path, contents, { root, sourceMaps, babel: options.babel });
 
       return contents;
     },

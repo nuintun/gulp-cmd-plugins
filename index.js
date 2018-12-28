@@ -30,6 +30,36 @@ const unixify = path => path.replace(/\\/g, '/');
 const isFileType = (path, type) => extname(path).toLowerCase() === `.${type}`;
 
 /**
+ * @function babelTransform
+ * @param {string} path
+ * @param {Object} options
+ */
+function babelTransform(path, contents, options) {
+  const sourceMaps = options.sourceMaps;
+  // Babel config
+  const config = Object.assign({}, options.babel, {
+    sourceMaps,
+    ast: false,
+    filename: path,
+    highlightCode: true,
+    sourceFileName: sourceMaps ? `/${unixify(relative(options.root, path))}` : path
+  });
+
+  // Babel transform
+  try {
+    const result = babel.transform(contents, config);
+
+    // Get transformed code
+    if (result) contents = result.ignored ? contents : result.code;
+  } catch (error) {
+    // Babel syntax error
+    throw error;
+  }
+
+  return contents;
+}
+
+/**
  * @function js
  * @param {Object} options
  */
@@ -66,26 +96,10 @@ module.exports = function(options = {}) {
       // Get contents string
       contents = contents.toString();
 
-      // Babel config
-      const config = Object.assign({}, options.babel, {
-        sourceMaps,
-        ast: false,
-        filename: path,
-        highlightCode: true,
-        sourceFileName: sourceMaps ? `/${unixify(relative(root, path))}` : path
-      });
+      // Babel trnasform
+      babelTransform(path, contents, { root, sourceMaps, babel: options.babel });
 
-      // Babel transform
-      try {
-        const result = babel.transform(contents, config);
-
-        // Get transformed code
-        if (result) contents = result.ignored ? contents : result.code;
-      } catch (error) {
-        // Babel syntax error
-        throw error;
-      }
-
+      // Set babel trnasform cache
       babelParsed.add(path);
 
       return contents;
@@ -114,29 +128,12 @@ module.exports = function(options = {}) {
       // Get contents string
       contents = contents.toString();
 
-      // Babel config
-      const config = Object.assign({}, options.babel, {
-        sourceMaps,
-        ast: false,
-        filename: path,
-        highlightCode: true,
-        sourceFileName: sourceMaps ? `/${unixify(relative(root, path))}` : path
-      });
-
-      // Babel transform
-      try {
-        const result = babel.transform(contents, config);
-
-        // Get transformed code
-        if (result) contents = result.ignored ? contents : result.code;
-      } catch (error) {
-        // Babel syntax error
-        throw error;
-      }
+      // Babel trnasform
+      babelTransform(path, contents, { root, sourceMaps, babel: options.babel });
 
       return contents;
     },
-    moduleWillBundle(path, contents, { root }) {
+    async moduleDidComplete(path, contents) {
       if (!isFileType(path, 'js')) return contents;
 
       // Get contents string
@@ -149,6 +146,9 @@ module.exports = function(options = {}) {
         // Get minify code
         contents = result.error ? contents : result.code;
       }
+
+      // Delete babel trnasform cache
+      babelParsed.delete(path);
 
       return contents;
     }

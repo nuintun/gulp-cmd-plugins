@@ -6,9 +6,9 @@
 
 'use strict';
 
+const terser = require('terser');
 const postcss = require('postcss');
 const cssnano = require('cssnano');
-const uglify = require('uglify-js');
 const babel = require('@babel/core');
 const autoprefixer = require('autoprefixer');
 const { extname, relative } = require('path');
@@ -65,12 +65,12 @@ function babelTransform(path, contents, options) {
  */
 module.exports = function(options = {}) {
   options.cssnano = options.cssnano || {};
-  options.uglify = Object.assign(
+  options.terser = Object.assign(
     {
       ie8: true,
       mangle: { eval: true }
     },
-    options.uglify
+    options.terser
   );
   options.autoprefixer = Object.assign(
     {
@@ -141,7 +141,7 @@ module.exports = function(options = {}) {
 
       // Uglify minify
       if (options.minify) {
-        const result = uglify.minify({ [path]: contents }, options.uglify);
+        const result = terser.minify({ [path]: contents }, options.terser);
 
         // Get minify code
         contents = result.error ? contents : result.code;

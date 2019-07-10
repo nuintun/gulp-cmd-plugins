@@ -75,8 +75,7 @@ module.exports = function(options = {}) {
   options.autoprefixer = Object.assign(
     {
       add: true,
-      remove: true,
-      browsers: ['> 0.5% in CN', '> 1%', 'ie >= 8']
+      remove: true
     },
     options.autoprefixer
   );

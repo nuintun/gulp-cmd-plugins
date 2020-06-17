@@ -63,7 +63,7 @@ function babelTransform(path, contents, options) {
  * @function js
  * @param {Object} options
  */
-module.exports = function(options = {}) {
+module.exports = function (options = {}) {
   options.cssnano = options.cssnano || {};
   options.terser = Object.assign(
     {

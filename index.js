@@ -89,7 +89,7 @@ module.exports = function (options = {}) {
 
   return {
     name: 'gulp-cmd-plugins',
-    async moduleDidLoad(path, contents, { root }) {
+    async moduleDidLoaded(path, contents, { root }) {
       if (!isFileType(path, 'js')) return contents;
 
       // Get contents string
@@ -103,7 +103,7 @@ module.exports = function (options = {}) {
 
       return contents;
     },
-    async moduleDidParse(path, contents, { root }) {
+    async moduleDidParsed(path, contents, { root }) {
       if (!isFileType(path, 'css')) return contents;
 
       // Get contents string
@@ -121,7 +121,7 @@ module.exports = function (options = {}) {
 
       return contents;
     },
-    async moduleDidTransform(path, contents, { root }) {
+    async moduleDidTransformed(path, contents, { root }) {
       if (babelParsed.has(path) || !isFileType(path, 'js')) return contents;
 
       // Get contents string
@@ -132,18 +132,16 @@ module.exports = function (options = {}) {
 
       return contents;
     },
-    async moduleDidComplete(path, contents) {
+    async moduleDidCompleted(path, contents) {
       if (!isFileType(path, 'js')) return contents;
 
       // Get contents string
       contents = contents.toString();
 
-      // Uglify minify
+      // Terser minify
       if (options.minify) {
-        const result = terser.minify({ [path]: contents }, options.terser);
-
         // Get minify code
-        contents = result.error ? contents : result.code;
+        contents = (await terser.minify({ [path]: contents }, options.terser)).code;
       }
 
       // Delete babel trnasform cache

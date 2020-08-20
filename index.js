@@ -140,8 +140,12 @@ module.exports = function (options = {}) {
 
       // Terser minify
       if (options.minify) {
-        // Get minify code
-        contents = (await terser.minify({ [path]: contents }, options.terser)).code;
+        try {
+          // Get minify code
+          contents = (await terser.minify({ [path]: contents }, options.terser)).code;
+        } catch (error) {
+          // Compress failed
+        }
       }
 
       // Delete babel trnasform cache

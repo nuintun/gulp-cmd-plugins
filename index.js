@@ -8,6 +8,7 @@
 
 const terser = require('terser');
 const postcss = require('postcss');
+const babel = require('@babel/core');
 const cssnano = require('cssnano')();
 const autoprefixer = require('autoprefixer');
 const { extname, relative } = require('path');
